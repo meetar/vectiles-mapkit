@@ -87,11 +87,6 @@ def map(t, z, paths)
           prop = r.data.attributes
           prop[:fid] = fid
           $stderr.print "[#{fid}]"
-          prop.each {|k, v|
-            if(v.class == String)
-              prop[k] = v.encode('UTF-8', 'CP932')
-            end
-          }
           r.geometry.tile(z) {|x, y, g|
             f = {:type => 'Feature', :geometry => g, :properties => prop}
             io.puts([t, z, x, y, JSON.dump(f)].join("\t") + "\n")
