@@ -1,4 +1,5 @@
 # coding: utf-8
+# usage: ruby {t} {z} {shapefiles...}
 require 'georuby-ext' # gem install georuby-ext
 require 'geo_ruby/shp'
 require 'fileutils'
@@ -120,7 +121,7 @@ end
 
 def help
   print <<-EOS
-  ruby convert.rb {t} {z} {shapefiles...} | sort | ruby convert.rb
+  ruby convert.rb {t} {z} {shapefiles...}
   EOS
 end
 
