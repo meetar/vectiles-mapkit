@@ -1,5 +1,6 @@
 # vectiles-mapkit
 under construction
+<img width="713" alt="First example using Global Map Singapore" src="https://cloud.githubusercontent.com/assets/18297/8613107/f7f666c8-2715-11e5-9c39-ab912c646649.png">
 
 vector-tile-based web map from shapefiles!
 ==========================================
