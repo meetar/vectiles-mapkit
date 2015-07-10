@@ -1,10 +1,10 @@
 # coding: utf-8
 # usage: ruby {t} {z} {shapefiles...}
-require 'georuby-ext' # gem install georuby-ext
-require 'geo_ruby/shp'
+require 'rgeo' # gem install rgeo
+require 'rgeo/geo_json' # gem install rgeo-geojson
+require 'rgeo/shapefile' # gem install rgeo-shapefile
 require 'fileutils'
 require 'json'
-include GeoRuby::Shp4r
 
 module Math
   def self.sec(x)
@@ -32,45 +32,43 @@ module XYZ
   end
 
   def self.xyz2envelope(x, y, z)
-    GeoRuby::SimpleFeatures::Envelope.from_points([
-      GeoRuby::SimpleFeatures::Point.from_coordinates(
-        xyz2lnglat(x, y, z)),
-      GeoRuby::SimpleFeatures::Point.from_coordinates(
-        xyz2lnglat(x + 1, y + 1, z))])
+    RGeo::GeoJSON.decode(JSON.dump({
+      :type => 'Polygon',
+      :coordinates => [[
+        xyz2lnglat(x, y, z),
+        xyz2lnglat(x, y + 1, z),
+        xyz2lnglat(x + 1, y + 1, z),
+        xyz2lnglat(x + 1, y, z),
+        xyz2lnglat(x, y, z)
+      ]]
+    }), :json_parser => :json)
   end
 end
 
-class GeoRuby::SimpleFeatures::Geometry
-  def tile(z)
-    lower = XYZ::pt2xy(self.bounding_box[0], z)
-    upper = XYZ::pt2xy(self.bounding_box[1], z)
-    self.each{|g|
-      rg = g.to_rgeo
+def tile(geom, z)
+  lower = nil
+  upper = nil
+  if(geom.envelope.dimension == 2)
+    lower = XYZ::pt2xy(geom.envelope.exterior_ring.point_n(0), z)
+    upper = XYZ::pt2xy(geom.envelope.exterior_ring.point_n(2), z)
+  else
+    lower = XYZ::pt2xy(geom.envelope, z)
+    upper = lower
+  end
+  (geom.respond_to?(:each) ? geom : [geom]).each{|g|
       lower[0].truncate.upto(upper[0].truncate) {|x|
         upper[1].truncate.upto(lower[1].truncate) {|y|
-          env = XYZ::xyz2envelope(x, y, z).to_rgeo
-          intersection = rg.intersection(env)
-          if intersection.is_empty?
-            $stderr.print "e"
-            next
-          end
-          if intersection.respond_to?(:each)
-            intersection.each {|g|
-              $stderr.print "m"
-              yield x, y, JSON.parse(g.to_georuby.as_geojson)
-            }
-          else
-            $stderr.print "s"
-            yield x, y, JSON.parse(intersection.to_georuby.as_geojson)
-          end
+          env = XYZ::xyz2envelope(x, y, z)
+          is = env.intersection(g)
+          (is.respond_to?(:each) ? is : [is]).each {|g|
+            yield x, y, RGeo::GeoJSON.encode(g)
+          } if is
         }
       }
     }
   end
-end
 
 def write(geojson, tzxy)
-  $stderr.print tzxy.inspect
   path = tzxy.join('/') + '.geojson'
   print "writing #{geojson[:features].size} features to #{path}\n"
   [File.dirname(path)].each {|d| FileUtils.mkdir_p(d) unless File.exist?(d)}
@@ -79,28 +77,28 @@ end
 
 def map(t, z, paths)
   IO.popen("sort | ruby #{__FILE__}", 'w') {|io|
+#  [$stdout].each {|io|
     fid = 0
     paths.each {|path|
-      ShpFile.open(path) {|shp|
+      RGeo::Shapefile::Reader.open(path) {|shp|
         shp.each{|r|
           fid += 1
-          prop = r.data.attributes
+          prop = r.attributes
           prop[:fid] = fid
           $stderr.print "[#{fid}]"
-          r.geometry.tile(z) {|x, y, g|
+          tile(r.geometry, z) {|x, y, g|
             f = {:type => 'Feature', :geometry => g, :properties => prop}
             io.puts([t, z, x, y, JSON.dump(f)].join("\t") + "\n")
           }
         }
       }
     }
-    $stderr.print "\n"
   }
 end
 
 def reduce
-  last = nil # to extend the scope of the variable
-  geojson = nil # to extend the scope of the variable
+  last = nil
+  geojson = nil
   while gets
     r = $_.strip.split("\t")
     current = r[0..3]
