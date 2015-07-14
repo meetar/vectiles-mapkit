@@ -88,6 +88,7 @@ def map(t, z, paths)
           $stderr.print "[#{fid}]"
           tile(r.geometry, z) {|x, y, g|
             f = {:type => 'Feature', :geometry => g, :properties => prop}
+            $stderr.puts([t, z, x, y, JSON.dump(f)].join("\t") + "\n")
             io.puts([t, z, x, y, JSON.dump(f)].join("\t") + "\n")
           }
         }

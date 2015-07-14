@@ -1,0 +1,35 @@
+cameras:
+  camera1:
+    type: isometric
+
+lights:
+  light1:
+    type: point
+    direction: [0, 0, -10800]
+    origin: camera
+    diffuse: 1.
+    ambient: .3
+    specular: .2
+
+scene:
+  background:
+    color: '#ffff'
+
+sources:
+  vectiles:
+    type: GeoJSONTiles
+    url: '//localhost:8080/out/{z}/{x}/{y}.geojson'
+    max_zoom: 8
+
+layers:
+  xray:
+    data: {source: vectiles}
+    draw:
+      polygons:
+        style: flat
+        order: 0
+        color: '#00000000'
+      lines:
+        order: 5
+        color: '#ff0000'
+        width: 3
