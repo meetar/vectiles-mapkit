@@ -18,7 +18,7 @@ scene:
 sources:
   vectiles:
     type: GeoJSONTiles
-    url: '//localhost:8080/out/{z}/{x}/{y}.geojson'
+    url: '//gsi-cyberjapan.github.io/vectiles-mapkit/out/{z}/{x}/{y}.geojson'
     max_zoom: 8
 
 layers:
@@ -26,7 +26,6 @@ layers:
     data: {source: vectiles}
     draw:
       polygons:
-        style: flat
         order: 0
         color: '#00000000'
       lines:
