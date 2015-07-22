@@ -4,16 +4,13 @@ cameras:
 
 lights:
   light1:
-    type: point
-    direction: [0, 0, -10800]
-    origin: camera
-    diffuse: 1.
-    ambient: .3
-    specular: .2
+    type: directional
+    diffuse: 1
+    ambient: .4
 
 scene:
   background:
-    color: '#ffff'
+    color: '#BED2FF'
 
 sources:
   vectiles:
@@ -21,14 +18,110 @@ sources:
     url: '//gsi-cyberjapan.github.io/vectiles-mapkit/out/{z}/{x}/{y}.geojson'
     max_zoom: 8
 
+  # uncomment to see labels and buildings
+  # osm:
+  #   type: TopoJSONTiles
+  #   url:  //vector.mapzen.com/osm/all/{z}/{x}/{y}.topojson?api_key=vector-tiles-HqUVidw
+
 layers:
   xray:
     data: {source: vectiles}
+
+    # hide the tile object
+    # filter:
+    #   not:
+    #     fid: 1527
+    draw:
+      lines:
+        order: 1
+        color: red
+        width: 3px
+      text:
+        order: 10
+        # text_source: nam
+        font:
+          typeface: bold 8pt Courier
+          fill: black
+          stroke: { color: white, width: 2 }
+    coastline:
+      filter: { f_code_des: Coastline/Shoreline }
+      draw:
+        lines:
+          order: 0
+          color: '#5F92A3'
+          width: 9px
+    admin:
+      filter: { f_code_des: Administrative Area }
+      draw:
+        polygons:
+          order: 1
+          color: '#ffffff'
+        lines:
+          order: 2
+          color: blue
+          width: 3px
+    water:
+      filter: { f_code_des: Inland Water }
+      draw:
+        polygons:
+          order: 1
+          color: '#B0C3EC'
+        lines:
+          order: 2
+          color: purple
+          width: 3px
+    builtup:
+      filter: { f_code_des: Built-Up Area }
+      draw:
+        polygons:
+          order: 2
+          color: lightgrey
+        lines:
+          order: 2
+          color: darkgrey
+          width: 3px
+    roads:
+      filter: { f_code_des: Road }
+      draw:
+        lines:
+          order: 3
+          color: '#999'
+          width: 3px
+    tunnel:
+      filter: { f_code_des: Tunnel }
+      draw:
+        lines:
+          order: 4
+          color: '#F9867B'
+          width: 3px
+    rail:
+      filter: { f_code_des: Railroad }
+      draw:
+        lines:
+          order: 5
+          color: black
+          width: 3px
+
+  buildings:
+    data: { source: osm, layer: buildings }
     draw:
       polygons:
-        order: 0
-        color: '#00000000'
-      lines:
-        order: 5
-        color: '#ff0000'
-        width: 3
+        order: 6
+        extrude: true
+        color: red
+  roadlabels:
+    data: { source: osm, layer: roads }
+    draw:
+      text:
+        font:
+          typeface: bold 8pt Courier
+          fill: black
+          stroke: { color: white, width: 2 }
+  placelabels:
+    data: { source: osm, layer: places }
+    draw:
+      text:
+        font:
+          typeface: bold 14pt Courier
+          fill: black
+          stroke: { color: white, width: 2 }
