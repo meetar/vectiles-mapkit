@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>GSI Vector Tiles &lt; Tangram</title>
-<link rel="stylesheet" href="//cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.0-beta.2/leaflet.css" />
 <style>
 body {margin: 0px; border: 0px; padding: 0px;}
 #map {height: 100%; width: 100%; position: absolute;}
@@ -12,10 +12,9 @@ body {margin: 0px; border: 0px; padding: 0px;}
 </head>
 <body>
 <div id="map"></div>
-<!-- <script src="//cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script> -->
-<script src="//rawgit.com/tangrams/tangram/master/demos/lib/leaflet/leaflet-1.0-dev.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.0-beta.2/leaflet.js"></script>
 <script src="//cdn.rawgit.com/mlevans/leaflet-hash/master/leaflet-hash.js"></script>
-<script src="//mapzen.com/tangram/0.1/tangram.min.js"></script>
+<script src="//mapzen.com/tangram/0.4/tangram.min.js"></script>
 <script>
 var vectiles = Tangram.leafletLayer({
   scene: 'scene.yaml', maxNativeZoom: 8,
@@ -31,5 +30,18 @@ var map = L.map('map', {
 var hash = new L.Hash(map);
 L.control.layers({}, {'background': background, 'vectiles': vectiles}).addTo(map);
 </script>
+
+<!-- Mapzen map UI -->
+<script src='//s3.amazonaws.com/assets-staging.mapzen.com/ui/mapzen-ui.min.js'></script>
+<script>
+  MPZN.bug({
+    name: 'Tangram',
+    link: 'https://mapzen.com/projects/tangram',
+    tweet: 'Tangram: real-time WebGL maps from @mapzen',
+    repo: 'https://github.com/tangrams/tangram'
+  });
+</script>
+
+
 </body>
 </html>

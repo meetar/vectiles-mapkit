@@ -17,6 +17,10 @@ sources:
     type: GeoJSONTiles
     url: '//gsi-cyberjapan.github.io/vectiles-mapkit/out/{z}/{x}/{y}.geojson'
     max_zoom: 8
+  vectiles2:
+    type: GeoJSON
+    # url: '//cyberjapandata.gsi.go.jp/xyz/{layer}/{z}/{x}/{y}.geojson'
+    url: '//cyberjapandata.gsi.go.jp/xyz/experimental_fgd/{z}/{x}/{y}.geojson'
 
   # uncomment to see labels and buildings
   # osm:
@@ -25,7 +29,7 @@ sources:
 
 layers:
   xray:
-    data: {source: vectiles}
+    data: {source: vectiles2}
 
     # hide the tile object
     # filter:
